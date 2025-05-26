@@ -693,7 +693,7 @@ Java 原子类是 `java.util.concurrent.atomic` 包下的一组类，它们提�
 - `AtomicLongFieldUpdater`：原子更新对象的长整型字段
 - `AtomicReferenceFieldUpdater`：原子更新对象的引用字段
 
-## 核心方法
+#### 核心方法
 
 所有原子类都提供以下核心方法：
 
@@ -738,42 +738,7 @@ public boolean compareAndSet(int expect, int update) {
 
 现代CPU都提供了CAS指令（如x86的`CMPXCHG`），JVM会将这些操作映射为本地硬件指令。
 
-## 使用示例
-
-### 1. 计数器示例
-```java
-AtomicInteger counter = new AtomicInteger(0);
-
-// 线程安全递增
-counter.incrementAndGet();
-
-// 线程安全累加
-counter.addAndGet(10);
-```
-
-### 2. 引用类型示例
-```java
-AtomicReference<String> ref = new AtomicReference<>("initial");
-
-// 原子更新
-ref.compareAndSet("initial", "updated");
-```
-
-### 3. 解决ABA问题
-```java
-AtomicStampedReference<Integer> stampedRef = 
-    new AtomicStampedReference<>(100, 0);
-
-// 获取当前值和版本号
-int[] stampHolder = new int[1];
-int currentValue = stampedRef.get(stampHolder);
-int currentStamp = stampHolder[0];
-
-// 带版本号的CAS操作
-stampedRef.compareAndSet(currentValue, 200, currentStamp, currentStamp + 1);
-```
-
-## 优势与局限
+#### 优势与局限
 
 **优势**：
 - 比锁性能更高（无阻塞）
@@ -786,7 +751,7 @@ stampedRef.compareAndSet(currentValue, 200, currentStamp, currentStamp + 1);
 - ABA问题（可通过带版本号的原子类解决）
 - 高竞争环境下性能可能下降（大量CAS失败）
 
-## 最佳实践
+#### 最佳实践
 
 1. 优先使用原子类而非 `volatile` + 同步的组合
 2. 对于简单计数器、状态标志等场景非常适用
@@ -801,6 +766,92 @@ Java原子类为并发编程提供了高效、轻量级的线程安全解决方�
 
 ### CountDownLatch
 CountDownLatch 是一个同步工具类，它允许一个或多个线程等待其他线程完成操作后再继续执行。CountDownLatch 内部维护了一个计数器，当计数器的值为0时，表示所有等待的线程都已经完成操作，可以继续执行。
+
+`CountDownLatch` 是 Java 并发包 (`java.util.concurrent`) 中一个非常有用的同步辅助类，它允许一个或多个线程等待其他线程完成操作后再继续执行。
+
+#### CountDownLatch核心概念
+
+CountDownLatch 基于计数器实现，主要特点包括：
+- **初始化计数器**：构造时指定计数值
+- **等待机制**：调用 `await()` 的线程会阻塞，直到计数器减到0
+- **计数递减**：其他线程完成任务后调用 `countDown()` 减少计数
+- **一次性使用**：计数器无法重置，用完即废弃
+
+#### 主要方法
+
+```java
+// 构造方法 - 初始化计数器
+CountDownLatch(int count)
+
+// 使当前线程等待，直到计数器减到0
+void await()
+
+// 带超时的等待
+boolean await(long timeout, TimeUnit unit)
+
+// 减少计数器值（计数-1）
+void countDown()
+
+// 获取当前计数值
+long getCount()
+```
+
+
+```java
+// 创建计数器(3个子任务)
+CountDownLatch latch = new CountDownLatch(3);
+
+for (int i = 0; i < 3; i++) {
+    new Thread(() -> {
+        try {
+            // 模拟任务执行
+            Thread.sleep((long)(Math.random() * 1000));
+            System.out.println(Thread.currentThread().getName() + " 完成任务");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            latch.countDown(); // 任务完成，计数器减1
+        }
+    }).start();
+}
+
+try {
+    System.out.println("主线程等待子线程完成任务...");
+    latch.await(); // 主线程等待所有任务完成
+    System.out.println("所有子线程完成任务，主线程继续执行");
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
+```
+
+
+#### 使用注意事项
+
+1. **一次性使用**：计数器减到0后无法重置，如需重复使用考虑 `CyclicBarrier`
+2. **异常处理**：确保在 `finally` 块中调用 `countDown()`，避免线程异常导致计数器无法减少
+3. **避免死锁**：确保计数器最终能减到0，否则等待线程会一直阻塞
+4. **性能考虑**：对于极高并发场景，`countDown()` 调用不会阻塞，性能较好
+
+#### 与相关类的比较
+
+| 特性                | CountDownLatch             | CyclicBarrier              | Phaser                     |
+|---------------------|---------------------------|---------------------------|---------------------------|
+| 重用性              | 一次性                     | 可重复使用                | 可重复使用                |
+| 计数器方向          | 递减                       | 递增                      | 灵活                      |
+| 参与方              | 固定                       | 固定                      | 动态可变                  |
+| 回调                | 无                         | 有                        | 有                        |
+| 适用场景            | 主等子/子等主/混合等待      | 多线程相互等待            | 复杂分阶段任务            |
+
+#### 实际应用场景
+
+1. 并行任务拆分后的汇总
+2. 服务启动时等待所有组件初始化完成
+3. 测试并发代码时协调多个线程同时开始
+4. 批量处理任务时等待所有任务完成
+
+`CountDownLatch` 是 Java 并发编程中的重要工具类，合理使用可以简化很多复杂的线程协调问题。
+
+
 ### CyclicBarrier
 CyclicBarrier 是一个同步工具类，它允许一组线程互相等待，直到所有线程都达到某个状态后再继续执行。CyclicBarrier 内部维护了一个计数器，当计数器的值为0时，表示所有等待的线程都已经到达屏障，可以继续执行。
 ### Semaphore
