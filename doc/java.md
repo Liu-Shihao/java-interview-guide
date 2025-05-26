@@ -499,18 +499,301 @@ Java 中的 `Lock` 接口是 Java 并发包 (java.util.concurrent.locks) 中提�
 
 `Lock`接口及其实现类提供了显式的锁机制，包括`ReentrantLock`、`ReadWriteLock`等。
 - **ReentrantLock**：可重入锁，提供了与`synchronized`关键字类似的功能，但更加灵活和可扩展。
+```java
+Lock lock = new ReentrantLock();
+try {
+    lock.lock();
+    // 临界区代码
+} finally {
+    lock.unlock(); // 确保在finally块中释放锁
+}
+```
 - **ReadWriteLock**：读写锁，允许多个线程同时读取共享资源，但只允许一个线程写入。
+```java
+ReadWriteLock rwLock = new ReentrantReadWriteLock();
+Lock readLock = rwLock.readLock();
+Lock writeLock = rwLock.writeLock();
 
+// 读操作
+readLock.lock();
+try {
+    // 读取共享数据
+} finally {
+    readLock.unlock();
+}
+
+// 写操作
+writeLock.lock();
+try {
+    // 修改共享数据
+} finally {
+    writeLock.unlock();
+}
+```
+
+注意：使用 Lock 时必须手动释放锁，通常在 finally 块中调用 unlock() 以确保锁被释放。
 
 
 
 
 ### volatile关键字
+
 `volatile`关键字用于修饰变量，确保变量的可见性和有序性。当一个变量被声明为`volatile`时，每次读取该变量时都会从主内存中获取最新的值，而每次写入该变量时都会立即刷新到主内存中。
+volatile 是 Java 中用于保证变量可见性和禁止指令重排序的关键字，它是 Java 轻量级的同步机制之一。
+核心特性：
+1. **可见性**：当一个变量被声明为 volatile 时，对该变量的修改会立即刷新到主内存中，而对该变量的读取也会从主内存中获取最新的值。
+2. **有序性**：volatile 关键字禁止了指令重排序，保证了代码的执行顺序。
+
+使用 volatile 关键字的场景：
+1. **状态标志**：当一个变量的值可能被多个线程修改时，可以使用 volatile 来确保变量的可见性。
+2. **双重检查锁定**：在单例模式中，使用 volatile 可以确保双重检查锁定的正确性。
+3. **计数器**：当一个变量的值需要被多个线程累加时，可以使用 volatile 来确保变量的可见性。
+4. **标志位**：当一个变量的值需要被多个线程修改时，可以使用 volatile 来确保变量的可见性。
 
 
-### 原子类(AtomicXXX)
+
+#### 核心特性
+
+#### 1. 可见性保证 (Visibility)
+- 当一个线程修改了 `volatile` 变量的值，新值会立即被刷新到主内存中
+- 当其他线程读取该变量时，会直接从主内存中读取最新值，而不是使用线程本地缓存(工作内存)
+
+#### 2. 禁止指令重排序 (Ordering)
+- JVM 和 CPU 会对指令进行优化重排，但 `volatile` 会禁止这种重排序
+- 通过插入内存屏障(Memory Barrier)实现
+
+### 内存语义
+
+#### 写操作语义
+1. 修改线程工作内存中的变量副本
+2. 将修改后的值立即刷新到主内存
+
+#### 读操作语义
+1. 从主内存中读取变量最新值
+2. 存入当前线程的工作内存
+
+#### 典型使用场景
+
+#### 1. 状态标志
+```java
+public class ShutdownRequested {
+    private volatile boolean shutdownRequested;
+    
+    public void shutdown() {
+        shutdownRequested = true;
+    }
+    
+    public void doWork() {
+        while (!shutdownRequested) {
+            // 执行任务
+        }
+    }
+}
+```
+
+#### 2. 单例模式的双重检查锁定(DCL)
+```java
+public class Singleton {
+    private static volatile Singleton instance;
+    
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+
+### Volatile 与 synchronized 的区别
+
+| 特性                | volatile                     | synchronized                 |
+|---------------------|------------------------------|------------------------------|
+| 原子性              | 仅保证单次读/写的原子性       | 保证代码块/方法的原子性        |
+| 可见性              | 保证                          | 保证                          |
+| 互斥性              | 不保证                        | 保证                          |
+| 性能                | 更高                          | 相对较低                      |
+| 阻塞                | 不会导致线程阻塞              | 可能导致线程阻塞              |
+| 使用场景            | 状态标志、双重检查锁定等       | 需要原子性复合操作的场景       |
+
+### Volatile局限性
+
+注意：
+1. volatile 不保证原子性，仅保证可见性和有序性。
+   ```java
+   volatile int count = 0;
+   count++; // 这不是原子操作，实际是读-改-写三个操作
+   ```
+2. volatile 不能保证线程安全，需要结合其他同步机制使用。
+3. volatile 适用于简单的变量，不适用于复杂的操作。
+
+
+### Volatile底层实现原理
+
+#### 内存屏障
+JVM 会在 `volatile` 变量操作前后插入内存屏障：
+
+1. **写操作前**：StoreStore 屏障
+2. **写操作后**：StoreLoad 屏障
+3. **读操作前**：LoadLoad 屏障 + LoadStore 屏障
+
+#### 缓存一致性协议
+现代 CPU 通常使用 MESI 协议来保证缓存一致性，`volatile` 的实现也依赖于此
+
+### Volatile最佳实践
+
+1. 仅当变量真正独立于程序其他状态时使用
+2. 避免过度使用，因为内存屏障会影响性能
+3. 对于简单的状态标志，`volatile` 是比锁更好的选择
+4. 在复杂的同步场景中，考虑使用 `java.util.concurrent.atomic` 包中的原子类
+
+`volatile` 提供了一种比锁更轻量级的线程间通信机制，但正确使用需要深入理解其语义和限制。
+   
+
+
+
+
+
+## Java 原子类 (Atomic Classes)
+
+Java 原子类是 `java.util.concurrent.atomic` 包下的一组类，它们提供了一种线程安全的方式来操作单个变量，无需使用同步锁（如 `synchronized`）。
+
 原子类(AtomicXXX)提供了线程安全的基本数据类型操作，如`AtomicInteger`、`AtomicLong`等。这些类的方法都是原子操作，即执行过程中不会被其他线程打断。
+
+## 核心特点
+
+1. **无锁线程安全**：基于 `CAS` (Compare-And-Swap) 实现，而非传统锁机制
+2. **高性能**：避免了线程阻塞和上下文切换的开销
+3. **原子性保证**：单个操作是原子的
+4. **内存可见性**：保证变量的修改对其他线程立即可见
+
+## 主要原子类
+
+### 1. 基本类型原子类
+- `AtomicBoolean`：原子更新布尔类型
+- `AtomicInteger`：原子更新整型
+- `AtomicLong`：原子更新长整型
+
+### 2. 引用类型原子类
+- `AtomicReference`：原子更新引用类型
+- `AtomicStampedReference`：带版本号的原子引用（解决ABA问题）
+- `AtomicMarkableReference`：带标记位的原子引用
+
+### 3. 数组原子类
+- `AtomicIntegerArray`：原子更新整型数组元素
+- `AtomicLongArray`：原子更新长整型数组元素
+- `AtomicReferenceArray`：原子更新引用类型数组元素
+
+### 4. 字段更新原子类
+- `AtomicIntegerFieldUpdater`：原子更新对象的整型字段
+- `AtomicLongFieldUpdater`：原子更新对象的长整型字段
+- `AtomicReferenceFieldUpdater`：原子更新对象的引用字段
+
+## 核心方法
+
+所有原子类都提供以下核心方法：
+
+```java
+// 获取当前值
+get()
+
+// 设置新值
+set(newValue)
+
+// 原子设置新值并返回旧值
+getAndSet(newValue)
+
+// CAS操作（Compare-And-Swap）
+compareAndSet(expect, update)  // 如果当前值==expect，则设置为update
+
+// 原子递增/递减
+getAndIncrement()  // i++
+getAndDecrement()  // i--
+incrementAndGet()  // ++i
+decrementAndGet()  // --i
+
+// 原子加减
+getAndAdd(delta)   // 返回旧值，然后加delta
+addAndGet(delta)   // 加delta，返回新值
+```
+
+### 原子类实现原理 - CAS
+
+原子类的核心是 **CAS (Compare-And-Swap)** 操作：
+
+```java
+// 伪代码表示CAS操作
+public boolean compareAndSet(int expect, int update) {
+    if (this.value == expect) {
+        this.value = update;
+        return true;
+    }
+    return false;
+}
+```
+
+现代CPU都提供了CAS指令（如x86的`CMPXCHG`），JVM会将这些操作映射为本地硬件指令。
+
+## 使用示例
+
+### 1. 计数器示例
+```java
+AtomicInteger counter = new AtomicInteger(0);
+
+// 线程安全递增
+counter.incrementAndGet();
+
+// 线程安全累加
+counter.addAndGet(10);
+```
+
+### 2. 引用类型示例
+```java
+AtomicReference<String> ref = new AtomicReference<>("initial");
+
+// 原子更新
+ref.compareAndSet("initial", "updated");
+```
+
+### 3. 解决ABA问题
+```java
+AtomicStampedReference<Integer> stampedRef = 
+    new AtomicStampedReference<>(100, 0);
+
+// 获取当前值和版本号
+int[] stampHolder = new int[1];
+int currentValue = stampedRef.get(stampHolder);
+int currentStamp = stampHolder[0];
+
+// 带版本号的CAS操作
+stampedRef.compareAndSet(currentValue, 200, currentStamp, currentStamp + 1);
+```
+
+## 优势与局限
+
+**优势**：
+- 比锁性能更高（无阻塞）
+- 避免死锁风险
+- 细粒度控制（变量级别）
+
+**局限**：
+- 仅适用于单个变量
+- 不适用于复杂复合操作
+- ABA问题（可通过带版本号的原子类解决）
+- 高竞争环境下性能可能下降（大量CAS失败）
+
+## 最佳实践
+
+1. 优先使用原子类而非 `volatile` + 同步的组合
+2. 对于简单计数器、状态标志等场景非常适用
+3. 高竞争环境下考虑使用 `LongAdder` (Java8+) 替代 `AtomicLong`
+4. 复杂操作仍需使用锁或其他同步机制
+
+Java原子类为并发编程提供了高效、轻量级的线程安全解决方案，是构建高性能并发系统的重要工具。
 
 ### 并发集合类
 并发集合类提供了线程安全的集合操作，如`ConcurrentHashMap`、`CopyOnWriteArrayList`等。这些类的方法都是原子操作，保证了线程安全。
