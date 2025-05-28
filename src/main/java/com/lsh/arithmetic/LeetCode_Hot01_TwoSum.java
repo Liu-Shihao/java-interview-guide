@@ -3,6 +3,7 @@ package com.lsh.arithmetic;
 import java.util.HashMap;
 
 /**
+ * https://leetcode.cn/problems/two-sum/?envType=study-plan-v2&envId=top-100-liked
  * 1. 两数之和
  * 难度：简单
  *
@@ -23,7 +24,7 @@ import java.util.HashMap;
  * 输入：nums = [3,3], target = 6
  * 输出：[0,1]
  */
-public class LeetCode01_TwoSum {
+public class LeetCode_Hot01_TwoSum {
     /**
      * 解法1： 枚举数组中的每一个数 x，寻找数组中是否存在 target-x
      * 复杂度分析
