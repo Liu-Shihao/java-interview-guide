@@ -55,7 +55,7 @@ public class LeetCode_Hot02_GroupAnagrams {
             hashMap.put(key, list);
 
         }
-        return new ArrayList<List<String>>(map.values());
+        return new ArrayList<List<String>>(hashMap.values());
     }
 
     public static void main(String[] args) {
