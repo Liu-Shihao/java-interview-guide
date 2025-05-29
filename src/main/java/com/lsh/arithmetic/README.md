@@ -37,6 +37,15 @@ hashMap.get(key).add(word);// 报错
 List<String> list = hashMap.getOrDefault(key, new ArrayList<String>());
 ```
 
+注意：
+`map.values()` 返回的是 `Collection<Integer>` 类型，不能直接强制转换为 `ArrayList<Integer>` ，这会导致 `ClassCastException` 。正确的做法是创建一个新的ArrayList：
+```java
+HashMap<Integer, Integer> map = new HashMap<>();
+ArrayList<Integer> list = (ArrayList<Integer>)map.values(); //报错
+        
+ArrayList<Integer> list = new ArrayList<>(map.values());
+```
+
 
 
 
