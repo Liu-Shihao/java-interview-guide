@@ -73,4 +73,9 @@ public class LeetCode_Hot03_LongestConsecutiveSequence {
         return longestStreak;
 
     }
+    /**
+     * 排序解法，但是排序时间复杂度为n * logn
+     * 通过排序，遍历每个元素的最长序列
+     *
+     */
 }
