@@ -2,7 +2,7 @@
 
 ## 简介
 
-作者为5年Java开发经验，面临裁员危机，这个repo主要是为了复习Java知识和面试准备。
+作者为5年Java开发经验，这个repo主要是为了复习Java知识和面试准备。
 
 
 微信公众号：TalkJava
@@ -12,33 +12,9 @@
 
 ## 目录
 
-### Java 基础
 
-- Java集合（Collection & Map）
-- Java创建线程的方式
-- Java进程与线程
-- Java线程安全
-- Synchronized关键字
-- Java ReentrantLock 锁
-- Java volatile关键字
-- Java内存模型（JMM）
-- Java线程池
-
-
-
-
-- [Java 基础](docs/java-basic.md)
-- [Java 集合](docs/java-collection.md)
-- [Java 多线程与并发](docs/java-concurrency.md)
-- [Java 网络](docs/java-network.md)
-- [Java 反射](docs/java-reflection.md)
-- [Java 注解](docs/java-annotation.md)
-- [Java 虚拟机](docs/java-vm.md)
-- [Java 类加载](docs/java-class-loader.md)
-- [Java 类库](docs/java-class-library.md)
-- [Java 异常](docs/java-exception.md)
-- [Java 设计模式](docs/java-design-pattern.md)
-- [Java 测试](docs/java-test.md)    
+- [Java](docs/java.md)
+  
 
 ### 数据库
 
@@ -53,20 +29,7 @@
 
 ### AI相关
 
-TODO：
-- 机器学习
-- 深度学习
 
 
 
-
-
-# 面试技巧
-
-
-## 自我介绍
-
-## 简历
-
-## 薪资
 
