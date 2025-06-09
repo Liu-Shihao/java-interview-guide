@@ -12,9 +12,6 @@ package com.lsh.arithmetic;
  */
 public class LeetCode_Hot11_ContainerWithMostWater {
 
-
-    
-
     /**
      * 双指针解法：
      * 1. 用两个指针分别指向数组的开头和结尾。
@@ -45,7 +42,6 @@ public class LeetCode_Hot11_ContainerWithMostWater {
         }
         return maxArea;
     }
-
 
 
     /**
