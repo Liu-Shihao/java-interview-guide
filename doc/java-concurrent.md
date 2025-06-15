@@ -1,5 +1,23 @@
 # Java并发与多线程
 
+
+# 面试题
+
+- 线程与进程的区别
+- 并行与并发的区别
+- 线程创建的方式有哪些？runnable和callable的区别？start()和run()的区别？
+- 线程有哪些状态？状态之间是如何改变的？
+- wait()和sleep()的区别
+- 如何停止一个正在运行的线程？
+- 说一下synchronized，synchronized锁升级的过程
+- 什么是JMM？
+- 说一下volatile的作用、实现原理和适用场景
+- synchronized和lock的区别
+- 线程池的核心参数有哪些？拒绝策略有哪些？常见的阻塞队列有哪些？
+- 说一下线程池的工作流程
+- 谈谈你对ThreadLocal的理解
+- ThreadLocal为什么会出现内存泄漏
+
 # 线程与进程
 线程与进程
 

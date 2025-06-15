@@ -22,7 +22,7 @@ import java.util.*;
  * 输入: strs = ["a"]
  * 输出: [["a"]]
  */
-public class LeetCode_Hot02_GroupAnagrams {
+public class LeetCode_Hot49_GroupAnagrams {
 
     /**
      *方法一：排序

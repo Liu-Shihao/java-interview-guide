@@ -1,3 +1,21 @@
+# 面试题
+- JDK和JRE的区别是什么？
+- hashCode()和equals()之间的关系
+- 为什么重写equals()方法必须要重写hashCode()方法？
+- final、finalize、finally的区别
+- 为什么String类是不可变的？
+- String、StringBuffer、StringBuilder的区别
+- 重载和重写的区别
+- 说一下ArrayList和LinkedList的区别
+- 说一下HashMap的底层实现原理
+- HashMap的put方法流程
+- HashMap的扩容机制
+- HashMap与Hashtable的区别
+- ConcurrentHashMap的实现原理
+- ThreadLocal参数如何传递？线程池如何传递？
+- 线程池如何知道一个线程的任务已经执行完成？
+- 
+
 # JDK各个版本新特性
 
 ## Java 8（2014）LTS

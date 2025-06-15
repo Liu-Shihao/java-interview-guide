@@ -10,11 +10,12 @@ public class InsertionSort {
      */
     public void insertionSort(int[] arr){
         for (int i = 1; i < arr.length; i++) {
-            //temp记录当前未排序的值
+            //temp记录当前未排序的值，因为如果不记录，arr[i]的值会被覆盖
             int temp = arr[i];
             int j = i -1;//j表示已排序的最后一个元素的索引
             while (j >= 0 && arr[j] > temp){
-                arr[j + 1] = arr[j];//
+                arr[j + 1] = arr[j];//将已排序的最后一个元素向后移动一位
+                //继续向前比较已排序区间的元素
                 j--;
             }
             //经过while循环，已经找到了当前元素(最开始的arr[i])的合适位置，将其插入到该位置（j+1）
