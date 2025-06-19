@@ -1,7 +1,5 @@
 package com.lsh.arithmetic;
 
-import java.util.List;
-
 /**
  * https://leetcode.cn/problems/reverse-linked-list/description/
  * 206. 反转链表
@@ -9,7 +7,7 @@ import java.util.List;
  * 输入：head = [1,2,3,4,5]
  * 输出：[5,4,3,2,1]
  */
-public class LeetCode_Hot206_reverse_linked_list {
+public class LeetCode_Hot206ReverseLinkedList {
 
      public class ListNode {
         int val;

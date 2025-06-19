@@ -24,7 +24,7 @@ import java.util.HashMap;
  * 输入：nums = [3,3], target = 6
  * 输出：[0,1]
  */
-public class LeetCode_Hot01_TwoSum {
+public class LeetCode_Hot01TwoSum {
     /**
      * 解法1： 枚举数组中的每一个数 x，寻找数组中是否存在 target-x
      * 复杂度分析

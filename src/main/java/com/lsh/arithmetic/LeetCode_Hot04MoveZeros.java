@@ -15,7 +15,7 @@ package com.lsh.arithmetic;
  * 输入: nums = [0]
  * 输出: [0]
  */
-public class LeetCode_Hot04_MoveZeros {
+public class LeetCode_Hot04MoveZeros {
 
     /**
      * 双指针解法
