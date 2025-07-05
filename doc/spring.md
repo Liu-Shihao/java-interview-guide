@@ -159,7 +159,7 @@ Spring AOP根据目标对象的特性自动选择代理方式：
 
 
 ### Spring MVC的执行流程
-`Spring MVC` 的核心流程围绕 ​`​前端控制器`（`DispatcherServlet`）​​ 展开，将请求分发给对应的处理器（`Controller`），并最终`渲染视图`返回给客户端。
+`Spring MVC` 的核心流程围绕 `前端控制器`（`DispatcherServlet`） 展开，将请求分发给对应的处理器（`Controller`），并最终`渲染视图`返回给客户端。
 
 1. **首先请求到达 `DispatcherServlet` 前端控制器**：所有的HTTP请求首先有DispatcherServlet 接收，它是Spring MVC的核心调度器。
 2. **调用 `HandlerMapping` 处理器映射器**：DispatcherServlet 会调用 HandlerMapping 处理器映射器，根据请求的URL找到对应的处理器（`Controller`）。

@@ -1,20 +1,16 @@
-# 面试题
-- JDK和JRE的区别是什么？
-- hashCode()和equals()之间的关系
-- 为什么重写equals()方法必须要重写hashCode()方法？
-- final、finalize、finally的区别
-- 为什么String类是不可变的？
-- String、StringBuffer、StringBuilder的区别
-- 重载和重写的区别
-- 说一下ArrayList和LinkedList的区别
-- 说一下HashMap的底层实现原理
-- HashMap的put方法流程
-- HashMap的扩容机制
-- HashMap与Hashtable的区别
-- ConcurrentHashMap的实现原理
-- ThreadLocal参数如何传递？线程池如何传递？
-- 线程池如何知道一个线程的任务已经执行完成？
-- 
+
+
+
+
+
+### Deque push()和offer()方法的区别
+
+
+### 线程池execute()方法和submit()方法的区别
+
+
+
+
 
 # JDK各个版本新特性
 
@@ -468,7 +464,7 @@ HashMap基于 `数组 + 链表/红黑树`实现。
 
 ### 扩容机制
 
-- 触发条件：元素数量 ≥ 容量 × 负载因子（0.75）
+- 触发条件：元素数量 > 容量 × 负载因子（0.75）
 - 过程：
     1. 创建新数组（容量 ×2）。
     2. 遍历旧数组，重新计算每个节点的索引（hash & (newCapacity - 1)）。
@@ -479,9 +475,53 @@ HashMap基于 `数组 + 链表/红黑树`实现。
 ## ConcurrentHashMap 原理
 **ConcurrentHashMap** 是 Java 并发包 (java.util.concurrent) 中的一个线程安全的哈希表实现。它是为了解决在并发环境下使用 HashMap 时可能出现的线程安全问题而设计的，**既保证线程安全，又提供高并发性能。**
 ConcurrentHashMap 底层是一个 数组 + 链表 + 红黑树 的结构（和 HashMap 类似）。
+核心存储结构：`transient volatile Node<K,V>[] table;  // 主哈希表数组`
+哈希桶(Hash Bucket):哈希表 table 数组的每个元素位置称为一个"桶"(bucket)
 
-Segment 已淘汰（Java 7 之前）Java 7 使用了 分段锁（Segment），把整个 map 分成多个段，每个段用 ReentrantLock 保护。
+1. 计算key的哈希值：(h = key.hashCode()) ^ (h >>> 16)
+2. 确定桶位置：(table.length - 1) & hash
+3. 处理哈希冲突：
+   - 桶为空：CAS插入新节点
+   - 桶非空：链表尾插或红黑树插入
+
+
+Segment 已淘汰（Java 7 之前）Java 7 使用了 分段锁（Segment）设计，把整个 map 分成多个段，每个段用 ReentrantLock 保护。
 Java 8 之后，不再使用 Segment，而是采用更加精细化的锁策略： CAS + synchronized + volatile
+
+读操作无需加锁，table数组引用和节点中的value使用volatile修饰，保证内存可见性。
+
+无冲突时：使用CAS无锁插入,
+有冲突时：使用synchronized锁定桶头节点插入
+
+在Java中，int类型的哈希码是​​32位二进制数​​。
+```
+key.hashCode() = 11001100 10101010 11110000 01010101 (32位)
+                |<-- 高16位 -->|<-- 低16位 -->|
+```
+异或是一种二进制位运算，符号为`^`,特点：​​相同为0，不同为1​
+
+如果减少哈希冲突？
+HashMap的hash方法计算哈希值：
+```java
+    static final int hash(Object key) {
+        int h;
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+    }
+```
+
+当HashMap容量较小时（如默认初始容量16），仅使用哈希值的低4位，完全忽略了高28位的信息！
+高位不同但低位相同的键，直接取低16位时，两者会冲突（低16位相同）
+
+通过扰动函数：`(h = key.hashCode()) ^ (h >>> 16)`
+将高位无符号右移16位，再与低16位异或，混合了高16位和低16位的信息，减少了哈希冲突的概率。
+
+
+
+
+注意：
+即使当前没有线程冲突，ConcurrentHashMap仍然使用CAS（Compare-And-Swap）进行无锁插入。CAS是CPU指令级的原子操作（如x86的CMPXCHG指令），比锁更轻量
+因为并发安全保证，防止检查后执行竞态条件。在检查和执行之间可能有其他线程修改了bucket状态
+先尝试低成本方案，CAS成功则直接返回，失败才升级到synchronized锁
 
 | 操作       | 同步机制                     | 说明                    |
 | -------- | ------------------------ | --------------------- |
@@ -508,6 +548,10 @@ Java 8 之后，不再使用 Segment，而是采用更加精细化的锁策略�
 
 
 ConcurrentHashMap 不允许 key 或 value 为 null
+因为在并发环境下无法区分是否是键值本身为null还是键不存在于容器内。因为检查与写入不是原子操作。
+ConcurrentHashMap 的读操作完全无锁：允许 value 为 null 会导致 get() 返回 null 时无法确定键是否存在。
+
+
 
 
 ---

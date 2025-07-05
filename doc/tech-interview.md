@@ -5,6 +5,35 @@
 - HashMap的底层实现是什么？
 - HashMap与ConcurrentHashMap的区别
 - ConcurrentHashMap线程安全的实现方式？
+- JDK和JRE的区别是什么？
+- hashCode()和equals()之间的关系
+- 为什么重写equals()方法必须要重写hashCode()方法？
+- final、finalize、finally的区别
+- 为什么String类是不可变的？
+- String、StringBuffer、StringBuilder的区别
+- 重载和重写的区别
+- 说一下ArrayList和LinkedList的区别
+- 说一下HashMap的底层实现原理
+- HashMap的put方法流程
+- HashMap的扩容机制
+- HashMap与Hashtable的区别
+- ConcurrentHashMap的实现原理
+- ThreadLocal参数如何传递？线程池如何传递？
+- 线程池如何知道一个线程的任务已经执行完成？
+- 线程与进程的区别
+- 并行与并发的区别
+- 线程创建的方式有哪些？runnable和callable的区别？start()和run()的区别？
+- 线程有哪些状态？状态之间是如何改变的？
+- wait()和sleep()的区别
+- 如何停止一个正在运行的线程？
+- 说一下synchronized，synchronized锁升级的过程
+- 什么是JMM？
+- 说一下volatile的作用、实现原理和适用场景
+- synchronized和lock的区别
+- 线程池的核心参数有哪些？拒绝策略有哪些？常见的阻塞队列有哪些？
+- 说一下线程池的工作流程
+- 谈谈你对ThreadLocal的理解
+- ThreadLocal为什么会出现内存泄漏
 
 ## 异常
 
@@ -28,6 +57,7 @@
 - 介绍下线程的状态转换过程？
 - 什么是死锁？如何避免？
 - 线程间有哪些通信方式？
+- 什么是happen-before原则？
 
 
 

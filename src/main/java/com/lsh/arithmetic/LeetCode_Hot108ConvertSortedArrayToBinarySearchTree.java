@@ -47,6 +47,8 @@ public class LeetCode_Hot108ConvertSortedArrayToBinarySearchTree {
         TreeNode node = new TreeNode(nums[mid]); // 创建当前节点
 
         // 递归构建左子树和右子树
+        //左子树的所有节点都应该比根节点小，右子树的所有节点都应该比根节点大。
+        //选 mid 作为根节点后，左子树的元素就是 nums[left ... mid-1]，右子树的元素就是 nums[mid+1 ... right]。
         node.left = buildBST(nums, left, mid - 1);
         node.right = buildBST(nums, mid + 1, right);
 
