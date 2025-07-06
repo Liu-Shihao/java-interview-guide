@@ -35,17 +35,17 @@ public class LeetCode_Hot118PascalsTriangle {
      */
     public List<List<Integer>> generate(int numRows) {
         ArrayList<List<Integer>> triangle = new ArrayList<>();
-        triangle.add(List.of(1));
-        triangle.add(List.of(1,1));
-        for (int i = 2; i < numRows; i++) {
-            List<Integer> pre = triangle.get(i - 1);
-            List<Integer> cur = new ArrayList<>();
-            cur.add(1);
-            for (int j = 1; j < i; j++) {
-                cur.add(pre.get(j - 1) + pre.get(j));
+        for (int i = 0; i < numRows; i++) {
+            List<Integer> row = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                if (j == 0 || j == i) {
+                    row.add(1);
+                }else{
+                    List<Integer> pre = triangle.get(i -1);
+                    row.add(pre.get(j -1) + pre.get(j));
+                }
             }
-            cur.add(1);
-            triangle.add(cur);
+            triangle.add(row);
         }
         return triangle;  
     }
