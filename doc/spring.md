@@ -1,30 +1,42 @@
 # Spring
-
-## Spring的Bean是单例的吗？线程安全吗？
-Spring Bean默认是单例的。
-单例Bean的线程安全取决于其状态（State）的设计：
-- 无状态Bean（Stateless）：线程安全，如果Bean不包含可变的成员变量（即无状态），则多线程并发访问时不会存在资源竞争。
-- 有状态Bean（Stateful）：非线程安全，需通过同步机制（如synchronized、ThreadLocal、并发类等）保证线程安全。
-
-## Spring Bean的生命周期
-
-Bean的创建阶段：
-1. 实例化Bean：通过反射机制调用Bean的构造函数创建Bean实例。
-2. 属性注入：Spring通过依赖注入（DI）为Bean的属性赋值（如@Autowired、@Value等）。处理setter注入或字段注入。
-3. Aware接口回调（可选实现）：如果Bean实现了Spring的Aware接口（如ApplicationContextAware、BeanNameAware等），则会回调这些接口方法（setBeanName()/setBeanFactory()）。
-4. BeanPostProcessor前置处理（postProcessBeforeInitialization）：所有BeanPostProcessor的`postProcessBeforeInitialization()`方法会被调用。
-5. `@PostConstruct` 注解方法 :依赖注入完成之后，初始化方法执行之前。
-6. InitializingBean & init-method（初始化逻辑）：如果Bean实现了InitializingBean接口，Spring会调用afterPropertiesSet()。如果配置了`init-method`（如@Bean(initMethod = "init")或XML中的init-method），Spring会调用该方法。
-7. BeanPostProcessor后置处理（postProcessAfterInitialization）：所有BeanPostProcessor的p`ostProcessAfterInitialization()`方法会被调用。
-8. Bean完全初始化后，存入Spring容器（ApplicationContext），供其他Bean或代码调用。
-9. Bean销毁阶段: `@PreDestroy` 注解方法 : 当Bean被销毁时，会调用@PreDestroy注解的方法。在容器销毁前调用的方法，做资源清理、日志、关闭连接等。
-10. DisposableBean & destroy-method（销毁逻辑）：如果Bean实现了DisposableBean接口，Spring会调用`destroy()`。如果配置了`destroy-method`（如@Bean(destroyMethod = "destroy")或XML中的destroy-method），Spring会调用该方法。
-
-Spring 管理 Bean 的整个生命周期，从创建实例到填充属性、初始化、销毁。
-
-## Spring
 Spring的核心是`IOC`(Inversion of Control)**控制反转** 和`AOP`(Aspect-Oriebted Programming)面向切面编程。
+
+### 什么是IOC？实现原理？
+`IOC`(Inversion of Control)**控制反转** 是面向对象编程中的一种设计原则，也是Spring框架的核心思想之一，用于降低代码之间的耦合度。
+**将创建对象的将控制权交给容器来管理。**
+
+控制反转的含义:
+- 传统控制流程：由应用程序主动创建和管理依赖对象
+- IOC控制流程：将对象的创建和依赖管理的控制权交给容器（框架），应用程序只需要声明依赖关系，容器负责创建和管理对象。
+
+控制反转意味着将原本由程序代码直接操控的对象创建和依赖管理权交给外部容器（如Spring容器）来管理。
+
+为什么需要IOC：
+降低代码耦合度
+可维护性：修改依赖关系时无需改动大量代码
+可测试性：依赖可通过Mock注入，便于单元测试
+提高代码复用性避免重复创建。
+
+
+`DI`(Dependency Injection)依赖注入是`IOC`的一种实现方式，通过构造函数、Setter 方法或字段注入依赖对象。
+
+### IOC容器有哪些？
+
+- BeanFactory：Spring最早的IOC容器，提供了基本的IOC功能，延迟加载Bean。
+- ApplicationContext：BeanFactory的子接口，提供了更多的企业级功能，如国际化、事件传播、资源访问等。
+
+### Bean的作用域
+
+Spring Bean默认是单例的，即每个Bean在整个应用程序中只有一个实例。
+
+除了单例作用域，Spring还支持以下作用域：
+- Prototype：每次请求都会创建一个新的Bean实例。
+- Request：每个HTTP请求都会创建一个新的Bean实例，该作用域仅适用于Web应用程序。
+- Session：每个HTTP Session都会创建一个新的Bean实例，该作用域仅适用于Web应用程序。
+- Global Session：每个全局的HTTP Session都会创建一个新的Bean实例，该作用域仅适用于Portlet应用程序。
+
 ### 什么是AOP？
+
 AOP(Aspect-Oriebted Programming)是面向切面编程，是一种编程范式，是对OOP的补充。
 它能够将一些与业务无关的代码从业务代码中分离出来，从而提高代码的复用性和可维护性。
 
@@ -57,21 +69,32 @@ OOP(Object-Oriented Programming)是面向对象编程，是一种编程范式，
 
 AOP是对OOP的补充，AOP通常需要建立在OOP基础之上。
 
-### 什么是IOC？实现原理？
-`IOC`(Inversion of Control)**控制反转** 是面向对象编程中的一种设计原则，也是Spring框架的核心思想之一，用于降低代码之间的耦合度。
-**将创建对象的将控制权交给容器来管理。**
+Spring AOP 基于动态代理实现：具体分为两种方式：
+JDK动态代理：只能代理接口，Spring AOP默认使用JDK动态代理。使用反射实现动态代理
+CGLIB动态代理：可以代理类，也可以代理接口，当Bean没有实现接口时，Spring AOP会使用CGLIB动态代理。使用字节码技术生成一个新的类，该类继承自目标类，并重写其中的方法。
 
-控制反转的含义:
-- 传统控制流程：由应用程序主动创建和管理依赖对象
-- IOC控制流程：将对象的创建和依赖管理的控制权交给容器（框架），应用程序只需要声明依赖关系，容器负责创建和管理对象。
+## Spring的Bean是单例的吗？线程安全吗？
+Spring Bean默认是单例的。
+单例Bean的线程安全取决于其状态（State）的设计：
+- 无状态Bean（Stateless）：线程安全，如果Bean不包含可变的成员变量（即无状态），则多线程并发访问时不会存在资源竞争。
+- 有状态Bean（Stateful）：非线程安全，需通过同步机制（如synchronized、ThreadLocal、并发类等）保证线程安全。
 
-控制反转意味着将原本由程序代码直接操控的对象创建和依赖管理权交给外部容器（如Spring容器）来管理。
+## Spring Bean的生命周期
 
-`DI`(Dependency Injection)依赖注入是`IOC`的一种实现方式，它通过一下三种方式实现：
-- 构造器注入
-- Setter方法注入
-- 字段注入：直接在字段上使用@Autowired注解，最常见的方式
-- 方法注入
+Bean的创建阶段：
+1. 实例化Bean：通过反射机制调用Bean的构造函数创建Bean实例。
+2. 属性注入：Spring通过依赖注入（DI）为Bean的属性赋值（如@Autowired、@Value等）。处理setter注入或字段注入。
+3. Aware接口回调（可选实现）：如果Bean实现了Spring的Aware接口（如ApplicationContextAware、BeanNameAware等），则会回调这些接口方法（setBeanName()/setBeanFactory()）。
+4. BeanPostProcessor前置处理（postProcessBeforeInitialization）：所有BeanPostProcessor的`postProcessBeforeInitialization()`方法会被调用。
+5. `@PostConstruct` 注解方法 :依赖注入完成之后，初始化方法执行之前。
+6. InitializingBean & init-method（初始化逻辑）：如果Bean实现了InitializingBean接口，Spring会调用afterPropertiesSet()。如果配置了`init-method`（如@Bean(initMethod = "init")或XML中的init-method），Spring会调用该方法。
+7. BeanPostProcessor后置处理（postProcessAfterInitialization）：所有BeanPostProcessor的p`ostProcessAfterInitialization()`方法会被调用。
+8. Bean完全初始化后，存入Spring容器（ApplicationContext），供其他Bean或代码调用。
+9. Bean销毁阶段: `@PreDestroy` 注解方法 : 当Bean被销毁时，会调用@PreDestroy注解的方法。在容器销毁前调用的方法，做资源清理、日志、关闭连接等。
+10. DisposableBean & destroy-method（销毁逻辑）：如果Bean实现了DisposableBean接口，Spring会调用`destroy()`。如果配置了`destroy-method`（如@Bean(destroyMethod = "destroy")或XML中的destroy-method），Spring会调用该方法。
+
+Spring 管理 Bean 的整个生命周期，从创建实例到填充属性、初始化、销毁。
+
 
 ### Spring Bean的生命周期
 Spring Bean的生命周期是指从Bean的创建到销毁的过程
@@ -157,6 +180,19 @@ Spring AOP根据目标对象的特性自动选择代理方式：
 2. 目标未实现接口：使用CGLIB代理
 3. 强制使用CGLIB：通过@EnableAspectJAutoProxy(proxyTargetClass=true)配置
 
+### 什么是动态代理？为什么要使用动态代理？为什么不直接使用目标类方法？
+
+
+动态代理是一种在运行时动态生成代理对象的技术，通过拦截目标对象的方法调用，在不修改原始代码的前提下实现功能增强。
+
+
+使用动态代理的核心目的是在不修改原始代码的前提下，解耦核心业务逻辑与通用功能
+
+为什么要使用动态代理？而不直接使用目标类方法？
+
+1. 避免代码臃肿：若直接调用目标类方法，所有通用逻辑（如日志记录）需在每个方法中重复编写，导致代码臃肿且难以维护。
+2. 功能动态扩展：直接调用目标类时，新增功能（如性能监控）需修改所有相关方法，违反开闭原则。通过代理类灵活插入新功能，无需改动原有代码。
+
 
 ### Spring MVC的执行流程
 `Spring MVC` 的核心流程围绕 `前端控制器`（`DispatcherServlet`） 展开，将请求分发给对应的处理器（`Controller`），并最终`渲染视图`返回给客户端。
@@ -170,3 +206,7 @@ Spring AOP根据目标对象的特性自动选择代理方式：
    - 或者直接响应数据，使用 `HttpMessageConverter` 将返回值转换为JSON/XML等格式，直接写入响应流。
 6. **返回响应给客户端**：DispatcherServlet 将处理结果返回给客户端。
 
+## SpringBoot 与SpringCloud的区别
+
+
+## Spring Boot的自动配置原理

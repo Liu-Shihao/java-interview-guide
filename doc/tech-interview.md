@@ -1,7 +1,5 @@
 # Java 基础篇
 
-## 集合容器
-
 - HashMap的底层实现是什么？
 - HashMap与ConcurrentHashMap的区别
 - ConcurrentHashMap线程安全的实现方式？
@@ -30,17 +28,13 @@
 - 什么是JMM？
 - 说一下volatile的作用、实现原理和适用场景
 - synchronized和lock的区别
-- 线程池的核心参数有哪些？拒绝策略有哪些？常见的阻塞队列有哪些？
-- 说一下线程池的工作流程
-- 谈谈你对ThreadLocal的理解
-- ThreadLocal为什么会出现内存泄漏
 
-## 异常
+---
+
 
 - Error和Exception的区别？
 
-
-# 并发与多线程
+---
 
 - 线程创建的方式有几种
 - 线程有哪些状态？
@@ -48,6 +42,11 @@
 - 线程池的核心参数有哪些？核心线程数如何确定？你们的任务队列设置的大小是多少？
 - 线程池的拒绝策略有哪些？
 - 有几种线程池？
+- 线程池的核心参数有哪些？拒绝策略有哪些？常见的阻塞队列有哪些？
+- 说一下线程池的工作流程
+- 线程池execute()方法和submit()方法有什么区别？
+- 谈谈你对ThreadLocal的理解
+- ThreadLocal为什么会出现内存泄漏
 - ThreadLocal是什么？底层原理是什么？
 - 什么是CAS 和 AQS？
 - 什么是JMM？
@@ -60,7 +59,7 @@
 - 什么是happen-before原则？
 
 
-
+---
 # JVM
 
 - JVM的内存区域有哪些？
@@ -74,6 +73,7 @@
 - GC频繁怎么解决？
 - JVM常见的配置参数有哪些？
 
+---
 # MySQL
 
 - MySQL有哪些存储引擎？InnoDB和MyISAM的区别是什么？
@@ -87,6 +87,8 @@
 - 索引的失效场景？
 - 什么是最左匹配原则？为什么？
 - 什么是聚簇索引和非聚簇索引？
+- SELECT xxx FOR UPDATE表示什么？
+- MySQL里有哪些日志？redo、undo log的作用？
 
 
 
